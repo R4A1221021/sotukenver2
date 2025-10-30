@@ -1,16 +1,78 @@
-{% extends "layout.html" %} {# 親テンプレート 'layout.html' を継承することを指定します #}
+{% extends "layout.html" %} {# 親テンプレートとして 'layout.html' を継承します #}
 
-{% block title %}安否確認・支援要請{% endblock %} {# 親テンプレートの 'title' ブロックをこの内容で上書きします (ブラウザのタブに表示されます) #}
-{% block header_title %}安否確認・支援要請{% endblock %} {# 親テンプレートの 'header_title' ブロックをこの内容で上書きします (画面上部の青いヘッダーに表示されます) #}
+{% block title %}安否確認・支援要請{% endblock %} {# ページのタイトルを設定します #}
+{% block header_title %}安否確認・支援要請{% endblock %} {# ヘッダーのタイトルを設定します #}
 
-{% block content %} {# 親テンプレートのメインコンテンツ部分 ( 'content' ブロック) をここから定義します #}
-<div class="p-4 md:p-8"> {# 画面全体を囲むコンテナ。Refarence.htmlの 'screen' クラスの代わりにパディングを指定しています #}
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">安否確認・支援要請</h2> <form action="{{ url_for('submit_request') }}" method="POST" id="support-request-form" class="bg-red-50 p-6 rounded-xl shadow-lg mb-6 border border-red-400">
-        <h3 class="text-xl font-bold text-red-700 mb-4">【構造化】支援要請フォーム</h3> <div class="mb-4"> <label class="block text-gray-700 font-semibold mb-1">要請カテゴリ (必須):</label> <select id="request-category" name="category" class="mt-1 p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-white" required> <option value="">選択してください</option> <option value="food">食料</option> <option value="water">飲料水</option> <option value="medical">医療/医薬品</option> <option value="shelter">避難場所/毛布</option> <option value="other">その他</option> </select> </div> <div class="mb-4"> <label class="block text-gray-700 font-semibold mb-1">優先度 (必須):</label> <div class="flex flex-wrap gap-4 mt-1" id="request-priority"> <label class="flex items-center text-red-600 font-medium"><input type="radio" name="priority" value="high" class="h-5 w-5 text-red-600 focus:ring-red-500 mr-2" required> 高 (緊急)</label> <label class="flex items-center text-yellow-600 font-medium"><input type="radio" name="priority" value="medium" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 mr-2"> 中</label> <label class="flex items-center text-green-600 font-medium"><input type="radio" name="priority" value="low" class="h-5 w-5 text-green-600 focus:ring-green-500 mr-2"> 低</label> </div> </div> <div class="mb-4"> <label class="block text-gray-700 font-semibold mb-1">詳細な状況/数量:</label> <textarea id="request-details" name="details" rows="2" class="mt-1 p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400" placeholder="具体的な品目や必要人数、期間を簡潔に入力してください。"></textarea> </div> <button type="submit" class="w-full bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition-all font-semibold shadow-md">支援要請を送信 (ダミー)</button>
-    </form> <form action="{{ url_for('submit_safety_check') }}" method="POST" class="bg-blue-50 p-6 rounded-xl shadow-lg mb-6 border border-blue-400">
-        <h3 class="text-xl font-bold text-blue-700 mb-4">安否報告</h3> <p class="text-gray-600 mb-4">「無事です」ボタンを押すと、あなたの安否が家族や管理者に通知されます。</p> <button type="submit" id="safety-check-in-button" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all font-semibold shadow-md">私は無事です (ダミー)</button>
-    </form> <div class="bg-white p-6 rounded-xl shadow-lg mb-6"> <h3 class="text-lg font-semibold mb-2 text-blue-700">安否確認リスト (リアルタイム)</h3>
-        <ul id="safety-check-list" class="list-disc pl-5 text-gray-700 space-y-1"> <li class="text-green-600 font-medium">user123 : 無事 (報告日時: 2025/10/30 11:00)</li> <li>（現在はこのリストはダミー表示です）</li> </ul>
-    </div> <div class="bg-white p-6 rounded-xl shadow-lg"> <h3 class="text-lg font-semibold mb-2 text-red-700">支援要請一覧 (リアルタイム)</h3>
-        <ul id="support-request-list" class="list-disc pl-5 text-gray-700 space-y-1"> <li class="text-red-600 font-medium">admin: 食料 (優先度: high) - 大人2名、3日分</li> <li>（現在はこのリストはダミー表示です）</li> </ul>
-    </div> </div> {% endblock %} {# 親テンプレートの 'content' ブロックの定義をここで終了します #}
+{% block content %} {# メインコンテンツの開始 #}
+<div class="p-4 md:p-8"> {# Refarence.htmlの 'screen' に合わせたパディングです #}
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">安否確認・支援要請</h2>
+
+    <form action="{{ url_for('submit_request') }}" method="POST" id="support-request-form" class="bg-red-50 p-6 rounded-xl shadow-lg mb-6 border border-red-400">
+        <h3 class="text-xl font-bold text-red-700 mb-4">【構造化】支援要請フォーム</h3>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-1">要請カテゴリ (必須):</label>
+            <select id="request-category" name="category" class="mt-1 p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-white" required>
+                <option value="">選択してください</option>
+                <option value="food">食料</option>
+                <option value="water">飲料水</option>
+                <option value="medical">医療/医薬品</option>
+                <option value="shelter">避難場所/毛布</option>
+                <option value="other">その他</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-1">優先度 (必須):</label>
+            <div class="flex flex-wrap gap-4 mt-1" id="request-priority">
+                <label class="flex items-center text-red-600 font-medium"><input type="radio" name="priority" value="high" class="h-5 w-5 text-red-600 focus:ring-red-500 mr-2" required> 高 (緊急)</label>
+                <label class="flex items-center text-yellow-600 font-medium"><input type="radio" name="priority" value="medium" class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 mr-2"> 中</label>
+                <label class="flex items-center text-green-600 font-medium"><input type="radio" name="priority" value="low" class="h-5 w-5 text-green-600 focus:ring-green-500 mr-2"> 低</label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-1">詳細な状況/数量:</label>
+            <textarea id="request-details" name="details" rows="2" class="mt-1 p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400" placeholder="具体的な品目や必要人数、期間を簡潔に入力してください。"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition-all font-semibold shadow-md">支援要請を送信</button>
+    </form>
+
+    <form action="{{ url_for('submit_safety_check') }}" method="POST" class="bg-blue-50 p-6 rounded-xl shadow-lg mb-6 border border-blue-400">
+        <h3 class="text-xl font-bold text-blue-700 mb-4">安否報告</h3>
+        <p class="text-gray-600 mb-4">「無事です」ボタンを押すと、あなたの安否が家族や管理者に通知されます。</p>
+        <button type="submit" id="safety-check-in-button" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all font-semibold shadow-md">私は無事です</button>
+    </form>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+        <h3 class="text-lg font-semibold mb-2 text-blue-700">安否確認リスト (リアルタイム)</h3>
+        <ul id="safety-check-list" class="list-disc pl-5 text-gray-700 space-y-1">
+
+            {% for check in safety_checks %}
+                <li class="text-green-600 font-medium">
+                    {{ check.user_id }} : {{ check.status }} (報告日時: {{ check.timestamp }})
+                </li>
+            {% else %}
+                <li>まだ報告はありません。</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-semibold mb-2 text-red-700">支援要請一覧 (リアルタイム)</h3>
+        <ul id="support-request-list" class="list-disc pl-5 text-gray-700 space-y-1">
+
+            {% for req in requests %}
+                <li class="text-red-600 font-medium">
+                    {{ req.user_id }}: {{ req.category }} (優先度: {{ req.priority }}) - {{ req.details }} ({{ req.timestamp }})
+                </li>
+            {% else %}
+                <li>現在、支援要請はありません。</li>
+            {% endfor %}
+
+        </ul>
+    </div>
+    </div>
+{% endblock %}

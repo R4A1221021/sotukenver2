@@ -1,5 +1,6 @@
 import os  # osモジュールをインポートします（シークレットキーの生成に使用）
 from flask import Flask, render_template, request, redirect, url_for, session, flash  # Flask本体と、Web処理に必要な関数群をインポートします
+import datetime  # タイムスタンプのために datetime をインポートします
 
 # Flaskアプリケーションを初期化（インスタンスを作成）します
 app = Flask(__name__)  # __name__ は現在のファイル名(app)を意味します
@@ -13,6 +14,10 @@ DUMMY_USERS = {
     "user123": {"password": "password123", "email": "user@example.com"},  # ユーザーID "user123" の情報
     "admin": {"password": "adminpass", "email": "admin@example.com"}  # ユーザーID "admin" の情報
 }  # 辞書の終わりです
+
+# データベースの代わりにメモリ（グローバル変数）でデータを保持します
+SUPPORT_REQUESTS = []  # 支援要請を格納するリスト
+SAFETY_CHECKS = {}  # 安否確認を格納する辞書（ユーザーIDをキーにして最新情報を上書き）
 
 
 # -------------------------------------------------------------------
@@ -92,7 +97,7 @@ def home():  # homeという名前の関数を定義します
     return render_template('home.html', user_id=user_id, email=user_email)  # 'home.html' を読み込み、IDとメールアドレスを渡します
 
 
-# --- ここからが追加分 ---
+# --- ここからが安否確認・支援要請の関数群です ---
 
 @app.route('/safety_check')  # /safety_check URLへのアクセスを定義します
 def safety_check():
@@ -101,33 +106,66 @@ def safety_check():
         flash('このページにアクセスするにはログインが必要です。', 'warning')  # 警告メッセージを設定
         return redirect(url_for('login'))  # ログイン画面（/login）へリダイレクトします
 
-    # ログイン済みの場合は安否確認画面を表示
-    return render_template('safety_check.html')  # 'safety_check.html' を読み込みます
+    # 保存されたデータをテンプレートに渡します
+    # （リストを逆順[.reverse()]にすると、新しい順で表示できます）
+    return render_template('safety_check.html',
+                           requests=reversed(SUPPORT_REQUESTS),
+                           safety_checks=SAFETY_CHECKS.values())
 
 
 @app.route('/submit_request', methods=['POST'])  # 支援要請フォームのPOST処理
 def submit_request():
-    """（ダミー）支援要請の処理"""
+    """支援要請の処理（ダミーではなくデータを保存）"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 本来はここでフォーム内容 (request.form['category'] など) をDBに保存します
-    flash('支援要請を送信しました (ダミー)。', 'success')  # 成功メッセージを設定
+    user_id = session['user_id']
+
+    ### 変更点: .now(datetime.timezone.utc) から .now() に変更し、ローカル時刻を取得 ###
+    now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')  # 現在時刻 (ローカル)
+
+    # フォームからデータを取得
+    new_request = {
+        "user_id": user_id,
+        "email": DUMMY_USERS.get(user_id, {}).get("email", "不明"),  # ユーザー情報からEmailを取得
+        "category": request.form['category'],
+        "priority": request.form['priority'],
+        "details": request.form['details'],
+        "timestamp": now
+    }
+
+    # グローバル変数のリストに追加
+    SUPPORT_REQUESTS.append(new_request)
+
+    flash('支援要請を送信しました。', 'success')  # 成功メッセージを設定
     return redirect(url_for('safety_check'))  # 安否確認画面にリダイレクト
 
 
 @app.route('/submit_safety_check', methods=['POST'])  # 安否報告フォームのPOST処理
 def submit_safety_check():
-    """（ダミー）安否報告の処理"""
+    """安否報告の処理（ダミーではなくデータを保存）"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 本来はここでDBに「無事」のステータスを保存します
-    flash(f"{session['user_id']} さんの安否を「無事」として報告しました (ダミー)。", 'success')  # 成功メッセージを設定
+    user_id = session['user_id']
+
+    ### 変更点: .now(datetime.timezone.utc) から .now() に変更し、ローカル時刻を取得 ###
+    now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')  # 現在時刻 (ローカル)
+
+    # 辞書にユーザーIDをキーとして保存（同じ人が再度押したら時間が更新される）
+    SAFETY_CHECKS[user_id] = {
+        "user_id": user_id,
+        "email": DUMMY_USERS.get(user_id, {}).get("email", "不明"),
+        "status": "無事",
+        "timestamp": now
+    }
+
+    flash(f"{session['user_id']} さんの安否を「無事」として報告しました。", 'success')  # 成功メッセージを設定
     return redirect(url_for('safety_check'))  # 安否確認画面にリダイレクト
 
 
-# --- ここまでが追加分 ---
+# --- ここまでが安否確認・支援要Scrape richiesta di
+# ---
 
 
 @app.route('/logout')  # /logout URLへのアクセスを定義します
