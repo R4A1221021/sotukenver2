@@ -1,0 +1,35 @@
+<!DOCTYPE html> <html lang="ja"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>{% block title %}災害情報共有アプリ{% endblock %}</title> {# ページのタイトルを定義するJinja2ブロック。継承先で上書き可能 #}
+
+    <script src="https://cdn.tailwindcss.com"></script> <style> /* 参考HTMLのスタイルを簡略化して適用 */
+        body { /* bodyタグ全体に適用するスタイル */
+            font-family: 'Inter', sans-serif; /* フォントを指定します */
+        }
+        .app-container { /* アプリ全体を囲むコンテナのスタイル */
+            display: flex; /* Flexboxレイアウトを使用します */
+            flex-direction: column; /* 子要素を縦方向（column）に並べます */
+            height: 100vh; /* 高さを画面の高さ(100vh)いっぱいにします */
+            background-color: #f3f4f6; /* 背景色を薄いグレーにします */
+        }
+        main { /* mainタグに適用するスタイル */
+            flex: 1; /* Flexbox内で残りのスペースをすべて埋めるように伸縮させます */
+            overflow-y: auto; /* 内容が縦にはみ出した場合のみ、スクロールバーを表示します */
+        }
+    </style> </head> <body class="bg-gray-100"> <div class="app-container"> <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10"> <h1 class="text-xl font-bold text-center"> {% block header_title %}災害情報共有アプリ{% endblock %} {# ヘッダータイトルを定義するJinja2ブロック。継承先で上書き可能 #}
+            </h1> </header> <main class="flex-1 overflow-y-auto p-4 md:p-8"> {# Flaskのflash()で設定されたメッセージを取得し、'messages'に格納します #}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %} {# もしメッセージが1件以上あれば #}
+                    <div class="w-full max-w-sm mx-auto mb-4"> {# メッセージ全体を囲むコンテナ。幅を制限し中央寄せにします #}
+                        {% for category, message in messages %} {# メッセージをカテゴリと本文に分けて1件ずつループ処理します #}
+                            <div class
+                            ="p-3 rounded-lg {# Tailwindクラス: 余白と角丸を指定 #}
+                            {% if category == 'danger' %}bg-red-200 text-red-800 {# 'danger'カテゴリなら赤系で表示 #}
+                            {% elif category == 'success' %}bg-green-200 text-green-800 {# 'success'カテゴリなら緑系で表示 #}
+                            {% else %}bg-blue-200 text-blue-800{% endif %}"> {# それ以外なら青系で表示 #}
+                                {{ message }} {# メッセージの本文を表示します #}
+                            </div> {% endfor %} {# メッセージのループを終了します #}
+                    </div> {% endif %} {# if文を終了します #}
+            {% endwith %} {# with構文を終了します #}
+
+            {% block content %}{% endblock %} {# 継承先ファイルの内容が挿入されるメインのJinja2ブロック #}
+
+        </main> </div> </body> </html> ```

@@ -1,0 +1,32 @@
+{% extends "layout.html" %} {# 親テンプレートとして 'layout.html' を継承することを宣言します #}
+
+{% block title %}新規登録{% endblock %} {# 親の 'title' ブロックの内容を「新規登録」というテキストで上書きします #}
+{% block header_title %}新規ユーザー登録{% endblock %} {# 親の 'header_title' ブロックを「新規ユーザー登録」で上書きします #}
+
+{% block content %} {# 親テンプレートの 'content' ブロックの開始 #}
+<div class="flex flex-col items-center justify-center h-full"> {# 画面中央にコンテンツを配置するためのコンテナ #}
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm"> {# 登録フォームの白いカード部分のスタイル指定 #}
+        <h2 class="text-2xl font-extrabold mb-6 text-center text-blue-700">新規登録</h2> {# 新規登録画面のタイトル #}
+
+        <form action="{{ url_for('register') }}" method="POST">
+
+            <div class="mb-4"> {# メールアドレス入力欄を囲むdiv #}
+                <label class="block text-gray-700 font-medium">メールアドレス (連絡用):</label> {# ラベルを表示 #}
+                <input type="email" name="email" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required> {# メールアドレス入力欄 #}
+            </div> {# メールアドレス入力欄のdivを閉じます #}
+
+            <div class="mb-4"> {# ユーザーID入力欄を囲むdiv #}
+                <label class="block text-gray-700 font-medium">ユーザーID (ログインID):</label> {# ラベルを表示 #}
+                <input type="text" name="user_id" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required> {# ユーザーID設定入力欄 #}
+            </div> {# ユーザーID入力欄のdivを閉じます #}
+
+            <div class="mb-6"> {# パスワード入力欄を囲むdiv #}
+                <label class="block text-gray-700 font-medium">パスワード：</label> {# ラベルを表示 #}
+                <input type="password" name="password" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required> {# パスワード設定入力欄 #}
+            </div> {# パスワード入力欄のdivを閉じます #}
+
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all font-semibold mb-3 shadow-md">登録してログインへ</button>
+
+            <a href="{{ url_for('login') }}" class="block w-full text-center text-gray-500 p-2 rounded-lg hover:bg-gray-100 transition-all text-sm mt-2">ログイン画面へ戻る</a> {# ログイン画面へ戻るリンク #}
+
+        </form> </div> </div> {% endblock %} {# 親テンプレートの 'content' ブロックの終了 #}

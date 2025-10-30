@@ -1,0 +1,29 @@
+{% extends "layout.html" %} {# 親テンプレートとして 'layout.html' を継承することを宣言します #}
+
+{% block title %}ログイン{% endblock %} {# 親の 'title' ブロックの内容を「ログイン」というテキストで上書きします #}
+{% block header_title %}ログイン・ユーザー登録{% endblock %} {# 親の 'header_title' ブロックを「ログイン・ユーザー登録」で上書きします #}
+
+{% block content %} {# 親テンプレートの 'content' ブロックの開始。ここからがメインコンテンツです #}
+<div class="flex flex-col items-center justify-center h-full"> {# 画面中央にコンテンツを配置するためのコンテナ（Flexboxを使用） #}
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm"> {# ログインフォームの白いカード部分のスタイル指定 #}
+        <h2 class="text-2xl font-extrabold mb-6 text-center text-blue-700">ログイン</h2> {# ログイン画面のタイトル #}
+
+        <form action="{{ url_for('login') }}" method="POST">
+
+            <div class="mb-4"> {# ユーザーID入力欄を囲むdiv #}
+                <label class="block text-gray-700 font-medium">ユーザーID：</label> {# ユーザーID入力欄のラベルを表示 #}
+                <input type="text" id="login-user-id" name="user_id" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required> {# ユーザーID入力欄 #}
+            </div> {# ユーザーID入力欄のdivを閉じます #}
+
+            <div class="mb-6"> {# パスワード入力欄を囲むdiv #}
+                <label class="block text-gray-700 font-medium">パスワード：</label> {# パスワード入力欄のラベルを表示 #}
+                <input type="password" id="login-password" name="password" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required> {# パスワード入力欄 #}
+            </div> {# パスワード入力欄のdivを閉じます #}
+
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all font-semibold mb-3 shadow-md">ログイン</button>
+
+            <a href="{{ url_for('register') }}" class="block w-full text-center bg-gray-500 text-white p-3 rounded-lg hover:bg-gray-600 transition-all font-semibold mb-3">新規登録</a> {# 新規登録画面へのリンクボタン #}
+
+            <button type="button" class="w-full text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-all text-sm mt-4">匿名で利用する (ダミー)</button> {# 匿名ログインボタン（ダミー） #}
+
+        </form> </div> </div> {% endblock %} {# 親テンプレートの 'content' ブロックの終了 #}
