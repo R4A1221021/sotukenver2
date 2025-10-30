@@ -92,6 +92,44 @@ def home():  # homeという名前の関数を定義します
     return render_template('home.html', user_id=user_id, email=user_email)  # 'home.html' を読み込み、IDとメールアドレスを渡します
 
 
+# --- ここからが追加分 ---
+
+@app.route('/safety_check')  # /safety_check URLへのアクセスを定義します
+def safety_check():
+    """安否確認・支援要請画面"""
+    if 'user_id' not in session:  # もしセッションに 'user_id' が存在しなかったら（＝未ログインなら）
+        flash('このページにアクセスするにはログインが必要です。', 'warning')  # 警告メッセージを設定
+        return redirect(url_for('login'))  # ログイン画面（/login）へリダイレクトします
+
+    # ログイン済みの場合は安否確認画面を表示
+    return render_template('safety_check.html')  # 'safety_check.html' を読み込みます
+
+
+@app.route('/submit_request', methods=['POST'])  # 支援要請フォームのPOST処理
+def submit_request():
+    """（ダミー）支援要請の処理"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # 本来はここでフォーム内容 (request.form['category'] など) をDBに保存します
+    flash('支援要請を送信しました (ダミー)。', 'success')  # 成功メッセージを設定
+    return redirect(url_for('safety_check'))  # 安否確認画面にリダイレクト
+
+
+@app.route('/submit_safety_check', methods=['POST'])  # 安否報告フォームのPOST処理
+def submit_safety_check():
+    """（ダミー）安否報告の処理"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # 本来はここでDBに「無事」のステータスを保存します
+    flash(f"{session['user_id']} さんの安否を「無事」として報告しました (ダミー)。", 'success')  # 成功メッセージを設定
+    return redirect(url_for('safety_check'))  # 安否確認画面にリダイレクト
+
+
+# --- ここまでが追加分 ---
+
+
 @app.route('/logout')  # /logout URLへのアクセスを定義します
 def logout():  # logoutという名前の関数を定義します
     """ログアウト処理"""
