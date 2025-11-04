@@ -289,7 +289,56 @@ def settings():
     return redirect(url_for('menu'))
 
 
-# --- ★★★ 緊急SOS ★★★ ---
+# --- ★★★ 緊急情報（ここから追加） ★★★ ---
+
+@app.route('/emergency_info')
+def emergency_info():
+    """緊急情報画面の表示"""
+    if 'user_id' not in session:
+        flash('このページにアクセスするにはログインが必要です。', 'warning')
+        return redirect(url_for('login'))
+
+    return render_template('emergency_info.html')
+
+
+# --- 緊急情報のダミー サブページ ---
+
+@app.route('/evac_info')
+def evac_info():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「避難場所空き情報」機能は現在準備中です。', 'info')
+    return redirect(url_for('emergency_info'))
+
+
+@app.route('/realtime_info')
+def realtime_info():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「リアルタイム情報」機能は現在準備中です。', 'info')
+    return redirect(url_for('emergency_info'))
+
+
+@app.route('/hazard_map')
+def hazard_map():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「ハザードマップDL」機能は現在準備中です。', 'info')
+    return redirect(url_for('emergency_info'))
+
+
+@app.route('/disaster_contact')
+def disaster_contact():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「防災用連絡先」機能は現在準備中です。', 'info')
+    return redirect(url_for('emergency_info'))
+
+
+# --- ★★★ 緊急情報（ここまで追加） ★★★ ---
+
+
+# --- 緊急SOS ---
 
 @app.route('/emergency_sos')
 def emergency_sos():
@@ -324,7 +373,6 @@ def submit_sos():
 
     flash('緊急SOSを発信しました。管理者に通知されました。', 'danger')
 
-    # ★★★ ここを変更しました ★★★
     # ホームではなく、SOS画面にリダイレクトします
     return redirect(url_for('emergency_sos'))
 
