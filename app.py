@@ -18,19 +18,27 @@ DUMMY_USERS = {
 SUPPORT_REQUESTS = []  # 支援要請を格納するリスト
 SAFETY_CHECKS = {}  # 安否確認を格納する辞書（ユーザーIDをキーにして最新情報を上書き）
 
-# ▼▼▼ チャット機能用のデータを追加 ▼▼▼
-# ダミーのグループ（キーがID、値がグループ名）
+# チャット機能用のデータ
 DUMMY_GROUPS = {
     "family": "家族グループ",
     "shelter_a": "A避難所チーム"
 }
-# チャットメッセージの履歴（キーはグループID、値はメッセージ辞書のリスト）
 CHAT_MESSAGES = {
     "family": [
         {"user_id": "admin", "text": "テストメッセージです", "timestamp": "2025/10/31 10:00"}
     ],
     "shelter_a": []
 }
+
+# ▼▼▼ コミュニティ機能用のデータを追加 ▼▼▼
+COMMUNITY_POSTS = [
+    {
+        "user_id": "admin",
+        "title": "（テスト投稿）水配布の情報",
+        "content": "市役所前で15時から水が配布されるそうです。",
+        "timestamp": "2025/10/31 09:00"
+    }
+]
 
 
 # ▲▲▲ ここまで追加 ▲▲▲
@@ -174,7 +182,7 @@ def menu():
     return render_template('menu.html')
 
 
-# --- ▼▼▼ チャット機能（ダミーから本実装に変更） ▼▼▼ ---
+# --- チャット機能 ---
 
 @app.route('/chat')
 def chat():
@@ -182,7 +190,6 @@ def chat():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 参加可能なグループリストを渡す
     return render_template('chat.html', groups=DUMMY_GROUPS)
 
 
@@ -192,19 +199,16 @@ def chat_room(group_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 存在しないグループIDならメニューに戻す
     if group_id not in DUMMY_GROUPS:
         flash('存在しないグループです。', 'danger')
         return redirect(url_for('chat'))
 
-    # グループ名とメッセージ履歴を取得
     group_name = DUMMY_GROUPS[group_id]
     messages = CHAT_MESSAGES.get(group_id, [])
 
     if request.method == 'POST':
-        # メッセージ送信処理
         text = request.form['message_text']
-        if text:  # 空のメッセージは送信しない
+        if text:
             user_id = session['user_id']
             now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')
 
@@ -213,29 +217,54 @@ def chat_room(group_id):
                 "text": text,
                 "timestamp": now
             }
-            # メモリ（CHAT_MESSAGES）にメッセージを追加
             CHAT_MESSAGES[group_id].append(new_message)
 
-        # 画面をリロード（再リダイレクト）して新しいメッセージを表示
         return redirect(url_for('chat_room', group_id=group_id))
 
-    # GETリクエストの場合（画面表示）
     return render_template('chat_room.html',
                            group_name=group_name,
                            group_id=group_id,
                            messages=messages,
-                           current_user_id=session['user_id'])  # 自分のIDを渡して左右分けに使う
+                           current_user_id=session['user_id'])
+
+
+# --- ▼▼▼ コミュニティ機能（ダミーから本実装に変更） ▼▼▼ ---
+
+@app.route('/community', methods=['GET', 'POST'])
+def community():
+    """コミュニティ（掲示板）機能"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # 新規投稿の処理
+        title = request.form['title']
+        content = request.form['content']
+        user_id = session['user_id']
+        now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')
+
+        if title and content:  # 件名と本文が空でないことを確認
+            new_post = {
+                "user_id": user_id,
+                "title": title,
+                "content": content,
+                "timestamp": now
+            }
+            # リストの先頭に追加 (
+            COMMUNITY_POSTS.insert(0, new_post)
+            flash('新しい投稿を行いました。', 'success')
+        else:
+            flash('件名と本文の両方を入力してください。', 'danger')
+
+        # 投稿後は、同じページにリダイレクトしてフォームの再送信を防ぐ
+        return redirect(url_for('community'))
+
+    # GETリクエストの場合（画面表示）
+    # 保存されている投稿リストをテンプレートに渡す
+    return render_template('community.html', posts=COMMUNITY_POSTS)
 
 
 # --- メニュー（ダミー） ---
-@app.route('/community')
-def community():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    flash('「コミュニティ」機能は現在準備中です。', 'info')
-    return redirect(url_for('menu'))
-
-
 @app.route('/group_management')
 def group_management():
     if 'user_id' not in session:
