@@ -121,7 +121,6 @@ def submit_request():
 
     user_id = session['user_id']
 
-    ### 変更点: .now(datetime.timezone.utc) から .now() に変更し、ローカル時刻を取得 ###
     now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')  # 現在時刻 (ローカル)
 
     # フォームからデータを取得
@@ -149,7 +148,6 @@ def submit_safety_check():
 
     user_id = session['user_id']
 
-    ### 変更点: .now(datetime.timezone.utc) から .now() に変更し、ローカル時刻を取得 ###
     now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')  # 現在時刻 (ローカル)
 
     # 辞書にユーザーIDをキーとして保存（同じ人が再度押したら時間が更新される）
@@ -164,8 +162,70 @@ def submit_safety_check():
     return redirect(url_for('safety_check'))  # 安否確認画面にリダイレクト
 
 
-# --- ここまでが安否確認・支援要Scrape richiesta di
-# ---
+# --- ここまでが安否確認・支援要請の関数群です ---
+
+
+# --- ▼▼▼ ここからがメニュー画面関連の関数群です (追加分) ▼▼▼ ---
+
+@app.route('/menu')
+def menu():
+    """メインメニュー画面"""
+    if 'user_id' not in session:
+        flash('このページにアクセスするにはログインが必要です。', 'warning')
+        return redirect(url_for('login'))
+
+    return render_template('menu.html')  # menu.html を表示
+
+
+# メニュー画面の行き先（ダミー）
+# これらのページはまだ作成されていないため、フラッシュメッセージを表示してメニューに戻します
+
+@app.route('/chat')
+def chat():
+    """（ダミー）チャットページ"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「チャット」機能は現在準備中です。', 'info')  # お知らせメッセージ
+    return redirect(url_for('menu'))  # メニュー画面に戻る
+
+
+@app.route('/community')
+def community():
+    """（ダミー）コミュニティページ"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「コミュニティ」機能は現在準備中です。', 'info')
+    return redirect(url_for('menu'))
+
+
+@app.route('/group_management')
+def group_management():
+    """（ダミー）グループ管理ページ"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「グループ管理」機能は現在準備中です。', 'info')
+    return redirect(url_for('menu'))
+
+
+@app.route('/qr_code')
+def qr_code():
+    """（ダミー）QRコードページ"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「QRコード」機能は現在準備中です。', 'info')
+    return redirect(url_for('menu'))
+
+
+@app.route('/settings')
+def settings():
+    """（ダミー）設定ページ"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    flash('「設定」機能は現在準備中です。', 'info')
+    return redirect(url_for('menu'))
+
+
+# --- ▲▲▲ ここまでがメニュー画面関連の関数群です (追加分) ▲▲▲ ---
 
 
 @app.route('/logout')  # /logout URLへのアクセスを定義します
