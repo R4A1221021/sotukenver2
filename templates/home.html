@@ -14,7 +14,8 @@
         <div class="grid grid-cols-2 gap-4"> {# ボタンを2列グリッドで配置するコンテナ #}
             <a href="{{ url_for('safety_check') }}" class="text-center bg-blue-500 text-white p-4 rounded-xl hover:bg-blue-600 transition-all font-semibold shadow-lg">安否確認・支援要請</a> {# /safety_check へリンク #}
 
-            <button class="bg-red-500 text-white p-4 rounded-xl hover:bg-red-600 transition-all font-semibold shadow-lg">緊急SOS発信</button> {# ボタン（ダミー） #}
+            <a href="{{ url_for('emergency_sos') }}" class="text-center bg-red-500 text-white p-4 rounded-xl hover:bg-red-600 transition-all font-semibold shadow-lg">緊急SOS発信</a>
+
             <button class="bg-green-500 text-white p-4 rounded-xl hover:bg-green-600 transition-all font-semibold shadow-lg">マップ</button> {# ボタン（ダミー） #}
             <button class="bg-yellow-500 text-white p-4 rounded-xl hover:bg-yellow-600 transition-all font-semibold shadow-lg">緊急情報</button> {# ボタン（ダミー） #}
         </div> {# グリッドコンテナを閉じます #}

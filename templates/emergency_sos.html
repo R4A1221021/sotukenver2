@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}緊急SOS発信{% endblock %}
+{% block header_title %}緊急SOS発信{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center h-full text-center">
+
+    <p class="mb-8 text-lg text-gray-600 font-medium">ボタンを押すと、あなたの情報が管理者に即座に送信されます。</p>
+
+    <form action="{{ url_for('submit_sos') }}" method="POST">
+        <button type="submit" id="sos-button" class="bg-white p-10 rounded-full shadow-2xl w-56 h-56 flex items-center justify-center border-8 border-red-500 transform hover:scale-105 transition-transform cursor-pointer">
+            <h2 class="text-3xl font-extrabold text-red-600">SOS発信</h2>
+        </button>
+    </form>
+
+</div>
+{% endblock %}

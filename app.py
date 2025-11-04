@@ -17,7 +17,7 @@ DUMMY_USERS = {
 # --- アプリ内データ（データベースの代わり） ---
 SUPPORT_REQUESTS = []  # 支援要請を格納するリスト
 SAFETY_CHECKS = {}  # 安否確認を格納する辞書（ユーザーIDをキーにして最新情報を上書き）
-
+SOS_REPORTS = []  # SOSレポートを格納するリスト
 # チャット機能用のデータ
 DUMMY_GROUPS = {
     "family": "家族グループ",
@@ -287,6 +287,46 @@ def settings():
         return redirect(url_for('login'))
     flash('「設定」機能は現在準備中です。', 'info')
     return redirect(url_for('menu'))
+
+
+# --- ★★★ 緊急SOS ★★★ ---
+
+@app.route('/emergency_sos')
+def emergency_sos():
+    """緊急SOS発信画面の表示"""
+    if 'user_id' not in session:
+        flash('このページにアクセスするにはログインが必要です。', 'warning')
+        return redirect(url_for('login'))
+
+    # emergency_sos.html をレンダリング
+    return render_template('emergency_sos.html')
+
+
+@app.route('/submit_sos', methods=['POST'])
+def submit_sos():
+    """緊急SOSの処理"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    now = datetime.datetime.now().strftime('%Y/%m/%d %H:%M')
+
+    # 新しいSOSレポートを作成
+    new_sos_report = {
+        "user_id": user_id,
+        "email": DUMMY_USERS.get(user_id, {}).get("email", "不明"),
+        "timestamp": now,
+        "message": "緊急SOSが発信されました"
+        # 注：実際のアプリではここで位置情報を取得するロジックが必要です
+    }
+    SOS_REPORTS.append(new_sos_report)
+    # print(SOS_REPORTS) # (コンソールでの確認用)
+
+    flash('緊急SOSを発信しました。管理者に通知されました。', 'danger')
+
+    # ★★★ ここを変更しました ★★★
+    # ホームではなく、SOS画面にリダイレクトします
+    return redirect(url_for('emergency_sos'))
 
 
 # --- ログアウト ---
