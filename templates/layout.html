@@ -1,51 +1,38 @@
-<!DOCTYPE html> <html lang="ja"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>{% block title %}災害情報共有アプリ{% endblock %}</title> {# ページのタイトルを定義するJinja2ブロック。継承先で上書き可能 #}
+<!DOCTYPE html> <html lang="ja"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>{% block title %}災害情報共有アプリ{% endblock %}</title> <script src="https://cdn.tailwindcss.com"></script>
 
-    <script src="https://cdn.tailwindcss.com"></script> <style> /* 参考HTMLのスタイルを簡略化して適用 */
-        body { /* bodyタグ全体に適用するスタイル */
-            font-family: 'Inter', sans-serif; /* フォントを指定します */
+    <style> /* ページに直接CSSスタイルを適用するためのstyleタグ */
+        /* 参考HTML(Refarence.html)のスタイルを簡略化して適用します */
+        body { /* bodyタグ（ページ全体）に適用するスタイル */
+            font-family: 'Inter', sans-serif; /* フォントの種類を指定します */
         }
-        .app-container { /* アプリ全体を囲むコンテナのスタイル */
+        .app-container { /* 'app-container'クラスを持つ要素（このアプリの全画面）のスタイル */
             display: flex; /* Flexboxレイアウトを使用します */
-            flex-direction: column; /* 子要素を縦方向（column）に並べます */
-            height: 100vh; /* 高さを画面の高さ(100vh)いっぱいにします */
+            flex-direction: column; /* 子要素を縦方向（上から下）に並べます */
+            height: 100vh; /* 高さを画面の高さ(100vh = 100% view height)いっぱいにします */
             background-color: #f3f4f6; /* 背景色を薄いグレーにします */
         }
-        main { /* mainタグに適用するスタイル */
-            flex: 1; /* Flexbox内で残りのスペースをすべて埋めるように伸縮させます */
-            overflow-y: auto; /* 内容が縦にはみ出した場合のみ、スクロールバーを表示します */
+        main { /* mainタグ（メインコンテンツ領域）に適用するスタイル */
+            flex: 1; /* Flexbox内で、ヘッダーとフッター以外の残りのスペースをすべて埋めます */
+            overflow-y: auto; /* 内容が縦方向にはみ出した場合のみ、スクロールバーを表示します */
         }
-    </style> </head> <body class="bg-gray-100"> <div class="app-container"> <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10"> <h1 class="text-xl font-bold text-center"> {% block header_title %}災害情報共有アプリ{% endblock %} {# ヘッダータイトルを定義するJinja2ブロック。継承先で上書き可能 #}
-            </h1> </header> <main class="flex-1 overflow-y-auto p-4 md:p-8"> {# Flaskのflash()で設定されたメッセージを取得し、'messages'に格納します #}
+    </style> </head> <body class="bg-gray-100"> <div class="app-container"> <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10">
+            <h1 class="text-xl font-bold text-center">
+                {% block header_title %}災害情報共有アプリ{% endblock %} </h1> </header> <main class="flex-1 overflow-y-auto p-4 md:p-8">
+
             {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %} {# もしメッセージが1件以上あれば #}
-                    <div class="w-full max-w-sm mx-auto mb-4"> {# メッセージ全体を囲むコンテナ。幅を制限し中央寄せにします #}
-                        {% for category, message in messages %} {# メッセージをカテゴリと本文に分けて1件ずつループ処理します #}
-                            <div class
+                {% if messages %} <div class="w-full max-w-sm mx-auto mb-4"> {% for category, message in messages %} <div class
                             ="p-3 rounded-lg {# Tailwindクラス: 余白と角丸を指定 #}
-                            {% if category == 'danger' %}bg-red-200 text-red-800 {# 'danger'カテゴリなら赤系で表示 #}
-                            {% elif category == 'success' %}bg-green-200 text-green-800 {# 'success'カテゴリなら緑系で表示 #}
-                            {% else %}bg-blue-200 text-blue-800{% endif %}"> {# それ以外なら青系で表示 #}
-                                {{ message }} {# メッセージの本文を表示します #}
-                            </div> {% endfor %} {# メッセージのループを終了します #}
-                    </div> {% endif %} {# if文を終了します #}
-            {% endwith %} {# with構文を終了します #}
+                            {% if category == 'danger' %}bg-red-200 text-red-800 {# 'danger'なら赤系 #}
+                            {% elif category == 'success' %}bg-green-200 text-green-800 {# 'success'なら緑系 #}
+                            {% else %}bg-blue-200 text-blue-800{% endif %}"> {# それ以外（'info'など）なら青系 #}
+                                {{ message }} </div> {% endfor %} </div> {% endif %} {% endwith %} {% block content %}{% endblock %}
 
-            {% block content %}{% endblock %} {# 継承先ファイルの内容が挿入されるメインのJinja2ブロック #}
+        </main> <footer class="bg-white p-2 shadow-inner border-t border-gray-200 flex justify-around items-center sticky bottom-0 z-10">
 
-        </main>
-
-        <footer class="bg-white p-2 shadow-inner border-t border-gray-200 flex justify-around items-center sticky bottom-0 z-10">
             <a href="{{ url_for('home') }}" class="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span class="text-xs">ホーム</span>
-            </a>
-            <a href="{{ url_for('menu') }}" class="flex flex-col items-center text-gray-600 hover:text-purple-600 transition-colors p-1 rounded-lg">
+                <span class="text-xs">ホーム</span> </a> <a href="{{ url_for('menu') }}" class="flex flex-col items-center text-gray-600 hover:text-purple-600 transition-colors p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                <span class="text-xs">メニュー</span>
-            </a>
-             <a href="#" class="flex flex-col items-center text-gray-600 hover:text-red-600 transition-colors p-1 rounded-lg">
+                <span class="text-xs">メニュー</span> </a> <a href="#" class="flex flex-col items-center text-gray-600 hover:text-red-600 transition-colors p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.253.608 3.249 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span class="text-xs">管理者</span>
-            </a>
-        </footer>
-        </div> </body> </html>
+                <span class="text-xs">管理者</span> </a> </footer> </div> </body> </html> ```
