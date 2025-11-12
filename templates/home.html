@@ -20,7 +20,12 @@
 
             <a href="{{ url_for('emergency_info') }}" class="text-center bg-yellow-500 text-white p-4 rounded-xl hover:bg-yellow-600 transition-all font-semibold shadow-lg">緊急情報</a>
 
-        </div> {# グリッドコンテナを閉じます #}
+            {# flex flex-col items-center justify-center を追加し、テキストを2行に分離 #}
+            <button class="bg-indigo-500 text-white p-4 rounded-xl hover:bg-indigo-600 transition-all font-semibold shadow-lg flex flex-col items-center justify-center">
+                <span>ラズベリーパイ</span>
+                <span>マニュアル</span>
+            </button>
+            </div> {# グリッドコンテナを閉じます #}
 
         <div class="mt-8"> {# ログアウトリンクを囲むdiv #}
             <a href="{{ url_for('logout') }}" class="text-gray-500 hover:text-red-500 transition-colors">ログアウト</a> {# ログアウトを実行するリンク #}

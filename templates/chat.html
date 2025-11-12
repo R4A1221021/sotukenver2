@@ -1,36 +1,23 @@
-{% extends "layout.html" %}
-{% block title %}チャット{% endblock %}
-{% block header_title %}チャット{% endblock %}
+{% extends "layout.html" %} {# 親テンプレート 'layout.html' を継承することを指定します #}
 
-{% block content %}
-<div class="bg-white p-6 rounded-xl shadow-lg">
+{% block title %}チャット{% endblock %} {# 親の 'title' ブロックを「チャット」というテキストで上書きします (ブラウザのタブに表示されます) #}
+{% block header_title %}グループチャット{% endblock %} {# 親の 'header_title' ブロックを「グループチャット」で上書きします (画面上部の青いヘッダーに表示されます) #}
 
-    <div class="mb-8">
-        <h2 class="text-xl font-bold mb-4">グループチャット</h2>
-        <div class="space-y-2">
-            {% for group_id, group_name in groups.items() %}
-                <a href="{{ url_for('group_chat_room', group_id=group_id) }}" class="block p-4 bg-gray-100 hover:bg-blue-100 rounded-lg">
-                    {{ group_name }}
-                </a>
-            {% else %}
-                <p class="text-gray-500">参加しているグループはありません。</p>
-                <a href="{{ url_for('group_management') }}" class="text-blue-600 hover:underline mt-2 inline-block">グループ管理へ</a>
-            {% endfor %}
-        </div>
-    </div>
+{% block content %} {# 親テンプレートの 'content' (メインコンテンツ) ブロックの開始。以下の内容が挿入されます #}
 
-    <div>
-        <h2 class="text-xl font-bold mb-4">個人チャット (DM)</h2>
-        <div class="space-y-2">
-            {% for user_id in users %}
-                <a href="{{ url_for('dm_chat_room', other_user_id=user_id) }}" class="block p-4 bg-gray-100 hover:bg-green-100 rounded-lg">
-                    {{ user_id }}
-                </a>
-            {% else %}
-                <p class="text-gray-500">他のユーザーが存在しません。</p>
-            {% endfor %}
-        </div>
-    </div>
+<div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-auto">
 
-</div>
-{% endblock %}
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">参加グループ選択</h2>
+
+    <div class="space-y-4">
+
+        {% for group_id, group_name in groups.items() %}
+
+            <a href="{{ url_for('chat_room', group_id=group_id) }}"
+
+               class="block w-full text-center bg-purple-500 text-white p-4 rounded-xl hover:bg-purple-600 transition-all font-semibold shadow-lg">
+
+                {{ group_name }} </a> {% else %} <p class="text-gray-500 text-center">参加可能なグループがありません。</p>
+
+        {% endfor %} </div> <div class="mt-8 text-center"> <a href="{{ url_for('menu') }}" class="text-gray-500 hover:text-blue-500 transition-colors">メニューに戻る</a>
+    </div> </div> {% endblock %} {# 'content' ブロックの定義をここで終了します #}

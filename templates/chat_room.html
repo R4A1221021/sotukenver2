@@ -1,41 +1,28 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {# 親テンプレート 'layout.html' を継承することを指定します #}
 
-{% block title %}チャット - {{ chat_title }}{% endblock %}
-{% block header_title %}{{ chat_title }}{% endblock %}
+{% block title %}{{ group_name }}{% endblock %} {# 親の 'title' ブロックを、app.pyから渡された 'group_name' 変数の内容で上書きします（ブラウザタブに表示） #}
+{% block header_title %}{{ group_name }}{% endblock %} {# 親の 'header_title' ブロックも 'group_name' 変数の内容で上書きします（画面上部ヘッダーに表示） #}
 
-{% block content %}
-    <div class="flex flex-col h-[75vh]">
+{% block content %} {# 親テンプレートの 'content' (メインコンテンツ) ブロックの開始。以下の内容が挿入されます #}
+<div class="flex flex-col h-full" style="height: 75vh;">
 
-        <div id="chat-log" class="flex-1 bg-white p-4 rounded-t-xl shadow-inner mb-4 overflow-y-auto space-y-4">
+    <div id="chat-messages-container" class="flex-1 bg-white p-4 rounded-xl shadow-inner mb-4 overflow-y-auto">
 
-            {% for msg in messages %}
-                <div class="text-sm {% if msg.user_id == current_user_id %}text-right{% endif %}">
-                    <p class="font-bold text-xs text-gray-500">{{ msg.user_id }}</p>
+        {% for msg in messages %}
+            {% if msg.user_id == current_user_id %}
+                <div class="text-sm mb-2 text-right">
+                    <div class="p-3 rounded-t-xl rounded-bl-xl inline-block max-w-xs bg-blue-600 text-white">
+                        {{ msg.text }} <span class="block text-xs text-blue-200 mt-1">{{ msg.timestamp }}</span>
+                    </div> </div> {% else %}
+                <div class="text-sm mb-2 text-left">
+                    <div class="p-3 rounded-t-xl rounded-br-xl inline-block max-w-xs bg-gray-200 text-gray-800">
+                        <strong class="block text-blue-800">{{ msg.user_id }}</strong>
+                        {{ msg.text }} <span class="block text-xs text-gray-500 mt-1">{{ msg.timestamp }}</span>
+                    </div> </div> {% endif %} {% else %} <p class="text-gray-500 text-center">まだメッセージはありません。</p>
 
-                    <p class="{% if msg.user_id == current_user_id %}bg-blue-500 text-white{% else %}bg-gray-200{% endif %} p-3 rounded-t-xl {% if msg.user_id == current_user_id %}rounded-bl-xl{% else %}rounded-br-xl{% endif %} inline-block max-w-xs text-left">
-                        {{ msg.text }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1">{{ msg.timestamp }}</p>
-                </div>
-            {% else %}
-                <p class="text-center text-gray-500">まだメッセージはありません。</p>
-            {% endfor %}
+        {% endfor %} </div> <form id="chat-send-form" class="flex" action="{{ url_for('chat_room', group_id=group_id) }}" method="POST">
 
-        </div>
-
-        <form id="chat-form" class="flex" method="POST" action="{{ post_url }}">
-            <input type="text" id="chat-message-input" name="message_text"
-                   class="flex-1 p-3 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   placeholder="メッセージを入力..." required>
-            <button type="submit" id="chat-message-submit"
-                    class="bg-blue-600 text-white p-3 rounded-r-xl hover:bg-blue-700 font-semibold">送信
-            </button>
-        </form>
-
-        <div class="mt-4 text-center">
-            <a href="{{ url_for('chat') }}" class="text-gray-500 hover:text-blue-500 transition-colors">
-                チャット選択に戻る
-            </a>
-        </div>
-    </div>
-{% endblock %}
+        <input type="text"
+               id="chat-message-input" name="message_text" class="flex-1 p-3 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="メッセージを入力..." required> <button type="submit" class="bg-blue-600 text-white p-3 rounded-r-xl hover:bg-blue-700 transition-colors font-semibold">送信</button>
+    </form> <div class="mt-4 text-center"> <a href="{{ url_for('chat') }}" class="text-gray-500 hover:text-blue-500 transition-colors">グループ選択に戻る</a>
+    </div> </div> {% endblock %} {# 'content' ブロックの定義をここで終了します #}
